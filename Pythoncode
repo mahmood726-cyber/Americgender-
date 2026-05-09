@@ -279,6 +279,21 @@ if shap:
 else:
     print("\nSHAP visualization skipped.")
 
+if shap:
+    mean_shap = pd.Series(np.mean(shap_values, axis=0), index=X_test.columns)
+    wider_gap_predictors = ", ".join(mean_shap.sort_values(ascending=False).head(3).index)
+    narrower_gap_predictors = ", ".join(mean_shap.sort_values(ascending=True).head(3).index)
+    driver_sentence = (
+        f"The strongest SHAP predictors of a wider gender gap were {wider_gap_predictors}. "
+        f"Features most associated with narrower gaps were {narrower_gap_predictors}."
+    )
+else:
+    importances = pd.Series(model.feature_importances_, index=X.columns).sort_values(ascending=False)
+    driver_sentence = (
+        "SHAP directionality was not available because the shap package was not installed. "
+        f"The highest random-forest feature-importance variables were {', '.join(importances.head(3).index)}."
+    )
+
 # --- 9. Publication Generation ---
 print("\n\n--- Generating Publication Text ---")
 publication_text = f"""
@@ -290,7 +305,7 @@ publication_text = f"""
 
 **Methods.** We calculated the gender gap in age-adjusted CVD mortality using 2019 CDC data. This was merged with county-level metrics from the 2023 County Health Rankings. The final dataset included [N={len(df_merged)}] US counties. A Random Forest model, interpreted with SHAP, was trained to predict the magnitude of the gender gap.
 
-**Results.** The model explained a significant portion of the variance in the gender gap (R² = {r2:.3f}). The SHAP analysis revealed that the most powerful predictors of a wider gender gap were [*insert top feature from SHAP plot, e.g., a higher county-level smoking rate*]. Conversely, counties with [*insert feature associated with a narrower gap, e.g., higher median household income*] had smaller differences in mortality between men and women.
+**Results.** The model explained a significant portion of the variance in the gender gap (R^2 = {r2:.3f}). {driver_sentence}
 
 **Conclusions.** The gender gap in CVD mortality is not uniform and varies based on a county's socioeconomic and behavioral context. Factors that disproportionately harm men, or protect women, can widen this health disparity.
 
