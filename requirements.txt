@@ -1,0 +1,13 @@
+# Core analysis dependencies (major versions pinned).
+scikit-learn>=1.9,<2
+pandas>=3.0,<4
+numpy>=2.4,<3
+seaborn>=0.13,<0.14
+matplotlib>=3.10,<4
+
+# Test runner.
+pytest>=9.0,<10
+
+# Optional: SHAP-based interpretation. The script falls back to random-forest
+# feature importances when SHAP is not installed, so this is not required to run.
+# shap>=0.45,<1
